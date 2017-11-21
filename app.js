@@ -7,8 +7,8 @@ let passport = require("passport");
 let Strategy = require("passport-facebook").Strategy;
 
 passport.use(new Strategy({
-    clientID: "2011663825736984",
-    clientSecret: "be1356af343e679c6dcd078093cb7c0c",
+    clientID: "1446458398805750",
+    clientSecret: "f354532384e5b3c37309a2496ee20c3d",
     callbackURL: "https://learning-passport-js.herokuapp.com/login/facebook/return"
 }, (accessToken, refreshToken, profile, cb) => {
     return cb(null, profile);
