@@ -4,22 +4,31 @@ let express = require("express");
 let session = require("express-session");
 let morgan = require("morgan");
 let passport = require("passport");
-let Strategy = require("passport-facebook").Strategy;
+let FacebookStrategy = require("passport-facebook");
+let GooglePlusStrategy = require("passport-google-plus");
 
-passport.use(new Strategy({
+passport.use(new FacebookStrategy({
     clientID: "1446458398805750",
     clientSecret: "f354532384e5b3c37309a2496ee20c3d",
     callbackURL: "https://learning-passport-js.herokuapp.com/login/facebook/return"
-}, (accessToken, refreshToken, profile, cb) => {
-    return cb(null, profile);
+}, (accessToken, refreshToken, profile, callback) => {
+    return callback(null, profile);
 }));
 
-passport.serializeUser((user, cb) => {
-    cb(null, user);
+passport.use(new GooglePlusStrategy({
+    clientId: "456795005039-o89i1cn0kqdii8ie5urono1oli31lcc9.apps.googleusercontent.com",
+    clientSecret: "8_wdc_EsgykuWTdnMqYASVop",
+    callbackURL: "https://learning-passport-js.herokuapp.com/login/google/return"
+}, (tokens, profile, done) => {
+    done(null, profile, tokens);
+}));
+
+passport.serializeUser((user, callback) => {
+    callback(null, user);
 });
 
-passport.deserializeUser((obj, cb) => {
-    cb(null, obj);
+passport.deserializeUser((obj, callback) => {
+    callback(null, obj);
 });
 
 let app = express();
@@ -48,8 +57,17 @@ app.get("/login",
 app.get("/login/facebook",
     passport.authenticate("facebook"));
 
+app.get("/login/google",
+    passport.authenticate("google"));
+
 app.get("/login/facebook/return",
     passport.authenticate("facebook", { failureRedirect: "/login" }),
+    (req, res) => {
+        res.redirect("/");
+    });
+
+app.get("/login/google/return",
+    passport.authenticate("google", { failureRedirect: "/login" }),
     (req, res) => {
         res.redirect("/");
     });
