@@ -4,8 +4,8 @@ let express = require("express");
 let session = require("express-session");
 let morgan = require("morgan");
 let passport = require("passport");
-let FacebookStrategy = require("passport-facebook");
-let GooglePlusStrategy = require("passport-google-plus");
+let FacebookStrategy = require("passport-facebook").Strategy;
+let GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 passport.use(new FacebookStrategy({
     clientID: "1446458398805750",
@@ -15,12 +15,12 @@ passport.use(new FacebookStrategy({
     return callback(null, profile);
 }));
 
-passport.use(new GooglePlusStrategy({
-    clientId: "456795005039-o89i1cn0kqdii8ie5urono1oli31lcc9.apps.googleusercontent.com",
+passport.use(new GoogleStrategy({
+    clientID: "456795005039-o89i1cn0kqdii8ie5urono1oli31lcc9.apps.googleusercontent.com",
     clientSecret: "8_wdc_EsgykuWTdnMqYASVop",
     callbackURL: "https://learning-passport-js.herokuapp.com/login/google/return"
-}, (tokens, profile, done) => {
-    done(null, profile, tokens);
+}, (accessToken, refreshToken, profile, callback) => {
+    return callback(null, profile);
 }));
 
 passport.serializeUser((user, callback) => {
@@ -58,7 +58,7 @@ app.get("/login/facebook",
     passport.authenticate("facebook"));
 
 app.get("/login/google",
-    passport.authenticate("google"));
+    passport.authenticate("google", { scope: ["profile"] }));
 
 app.get("/login/facebook/return",
     passport.authenticate("facebook", { failureRedirect: "/login" }),
